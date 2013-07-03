@@ -87,7 +87,7 @@ class TestApplicationRequest < MiniTest::Test
     assert_equal get_user_info_digest, "LW5J5R7SnPFPurAa2pM7weTWL1Y="
 
     assert_equal download_file_list_digest.strip,
-      "gI64M6swTmeWLSdULthFoo1gZu0="
+      "th8mrSmKhsMvxn4OMvUv9JjIL7Q="
 
     assert_equal Base64.encode64(download_file_digest).strip,
       "lY+8u+BhXlQmUyQiOiXcUfCUikc="

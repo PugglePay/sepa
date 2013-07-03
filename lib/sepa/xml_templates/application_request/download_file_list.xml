@@ -2,13 +2,13 @@
     <CustomerId></CustomerId>
     <Command></Command>
     <Timestamp></Timestamp>
+    <StartDate></StartDate>
+    <EndDate></EndDate>
     <Status></Status>
     <Environment></Environment>
     <TargetId></TargetId>
     <SoftwareId></SoftwareId>
     <FileType></FileType>
-    <StartDate></StartDate>
-    <EndDate></EndDate>
     <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
         <dsig:SignedInfo>
             <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"/>
