@@ -87,7 +87,7 @@ class TestApplicationRequest < MiniTest::Test
     assert_equal get_user_info_digest, "LW5J5R7SnPFPurAa2pM7weTWL1Y="
 
     assert_equal download_file_list_digest.strip,
-      "dYtf4lOP1TXfXPVjYLvaTozhVrg="
+      "gI64M6swTmeWLSdULthFoo1gZu0="
 
     assert_equal Base64.encode64(download_file_digest).strip,
       "lY+8u+BhXlQmUyQiOiXcUfCUikc="
@@ -122,6 +122,24 @@ class TestApplicationRequest < MiniTest::Test
 
   def test_ar_should_initialize_with_proper_params
     assert Sepa::ApplicationRequest.new(@params)
+  end
+
+  def test_ar_should_take_optional_end_date_start_date
+    request = Sepa::ApplicationRequest.new(@params.merge(
+      start_date: Date.new(2010, 01, 01),
+      end_date:   Date.new(2011, 01, 01),
+      command:    :download_file_list
+    ))
+
+    ns = {
+      'n' => "http://bxd.fi/xmldata/"
+    }
+    doc = Nokogiri::XML.parse(Base64.decode64(request.get_as_base64))
+    assert_equal doc.at_xpath('//n:StartDate', ns).content,
+      "2010-01-01"
+
+    assert_equal doc.at_xpath('//n:EndDate', ns).content,
+      "2011-01-01"
   end
 
   def test_should_get_key_error_if_private_key_missing

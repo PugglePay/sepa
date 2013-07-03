@@ -18,6 +18,8 @@ module Sepa
       @customer_id = params.fetch(:customer_id)
       @environment = params.fetch(:environment)
       @content = params[:content]
+      @start_date = params[:start_date]
+      @end_date   = params[:end_date]
     end
 
     def get_as_base64
@@ -75,6 +77,8 @@ module Sepa
           set_node("Status", @status)
           set_node("TargetId", @target_id)
           set_node("FileType", @file_type)
+          set_node("StartDate", @start_date && @start_date.strftime("%Y-%m-%d"))
+          set_node("EndDate", @end_date && @end_date.strftime("%Y-%m-%d"))
         when :download_file
           set_node("Status", @status)
           set_node("TargetId", @target_id)
