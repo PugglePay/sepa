@@ -124,6 +124,19 @@ class TestApplicationRequest < MiniTest::Test
     assert Sepa::ApplicationRequest.new(@params)
   end
 
+  def test_ar_has_no_start_and_end_date_when_not_given
+    request = Sepa::ApplicationRequest.new(@params.merge(
+      command:    :download_file_list
+    ))
+
+    ns = {
+      'n' => "http://bxd.fi/xmldata/"
+    }
+    doc = Nokogiri::XML.parse(Base64.decode64(request.get_as_base64))
+    assert_equal doc.at_xpath('//n:StartDate', ns), nil
+    assert_equal doc.at_xpath('//n:EndDate', ns), nil
+  end
+
   def test_ar_should_take_optional_end_date_start_date
     request = Sepa::ApplicationRequest.new(@params.merge(
       start_date: Date.new(2010, 01, 01),
