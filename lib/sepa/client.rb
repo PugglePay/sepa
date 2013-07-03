@@ -5,7 +5,7 @@ module Sepa
     def initialize(params)
       check_params(params)
       wsdl = params.fetch(:wsdl)
-      @client = Savon.client(wsdl: wsdl)
+      @client = Savon.client(wsdl: wsdl, log: false)
       @command = params.fetch(:command)
 
       if @command == :get_certificate
