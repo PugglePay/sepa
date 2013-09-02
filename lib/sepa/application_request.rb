@@ -20,6 +20,7 @@ module Sepa
       @content = params[:content]
       @start_date = params[:start_date]
       @end_date   = params[:end_date]
+      @timestamp  = params[:timestamp]
     end
 
     def get_as_base64
@@ -62,7 +63,7 @@ module Sepa
       # Set the nodes' contents according to the command
       def set_nodes_contents
         set_node("CustomerId", @customer_id)
-        set_node("Timestamp", Time.now.iso8601)
+        set_node("Timestamp",  @timestamp || Time.now.iso8601)
         set_node("Environment", @environment)
         set_node("SoftwareId", "Sepa Transfer Library version #{VERSION}")
         set_node("Command",
