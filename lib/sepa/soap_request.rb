@@ -56,7 +56,7 @@ module Sepa
         set_node(body, 'bxd|ApplicationRequest', ar)
         set_node(body, 'bxd|SenderId', sender_id)
         set_node(body, 'bxd|RequestId', SecureRandom.hex(17))
-        set_node(body, 'bxd|Timestamp', @timestamp || Time.now.iso8601)
+        set_node(body, 'bxd|Timestamp', (@timestamp || Time.now).iso8601)
         set_node(body, 'bxd|Language', lang)
         set_node(body, 'bxd|UserAgent',
                  "Sepa Transfer Library version " + VERSION)
@@ -71,9 +71,9 @@ module Sepa
       end
 
       def process_header(header, private_key, cert)
-        set_node(header, 'wsu|Created', Time.now.iso8601)
+        set_node(header, 'wsu|Created', (@timestamp || Time.now).iso8601)
 
-        set_node(header, 'wsu|Expires', (Time.now + 3600).iso8601)
+        set_node(header, 'wsu|Expires', ((@timestamp || Time.now) + 3600).iso8601)
 
         timestamp_digest = calculate_digest(@header,'wsu|Timestamp')
         set_node(header,'dsig|Reference[URI="#dsfg8sdg87dsf678g6dsg6ds7fg"]' \
