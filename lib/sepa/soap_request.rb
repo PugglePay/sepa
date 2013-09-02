@@ -6,6 +6,7 @@ module Sepa
       @command = params.fetch(:command)
       @sender_id = params.fetch(:customer_id)
       @receiver_id = params.fetch(:target_id)
+      @timestamp = params[:timestamp]
       @ar = ApplicationRequest.new(params).get_as_base64
       @lang = params.fetch(:language)
 
@@ -55,7 +56,7 @@ module Sepa
         set_node(body, 'bxd|ApplicationRequest', ar)
         set_node(body, 'bxd|SenderId', sender_id)
         set_node(body, 'bxd|RequestId', SecureRandom.hex(17))
-        set_node(body, 'bxd|Timestamp', Time.now.iso8601)
+        set_node(body, 'bxd|Timestamp', @timestamp || Time.now.iso8601)
         set_node(body, 'bxd|Language', lang)
         set_node(body, 'bxd|UserAgent',
                  "Sepa Transfer Library version " + VERSION)
