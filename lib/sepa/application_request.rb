@@ -155,8 +155,16 @@ module Sepa
           set_node("Status", @status)
           set_node("TargetId", @target_id)
           set_node("FileType", @file_type)
-          set_node("StartDate", @start_date && @start_date.strftime("%Y-%m-%d"))
-          set_node("EndDate", @end_date && @end_date.strftime("%Y-%m-%d"))
+          if @start_date
+            set_node("StartDate", @start_date.strftime("%Y-%m-%d"))
+          else
+            @ar.at_css("StartDate").remove
+          end
+          if @end_date
+            set_node("EndDate", @end_date.strftime("%Y-%m-%d"))
+          else
+            @ar.at_css("EndDate").remove
+          end
         when :download_file
           set_node("Status", @status)
           set_node("TargetId", @target_id)
