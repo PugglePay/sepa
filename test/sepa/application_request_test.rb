@@ -78,7 +78,7 @@ class TestApplicationRequest < MiniTest::Test
     assert_equal get_user_info_digest, "LW5J5R7SnPFPurAa2pM7weTWL1Y="
 
     assert_equal download_file_list_digest.strip,
-      "dYtf4lOP1TXfXPVjYLvaTozhVrg="
+      "th8mrSmKhsMvxn4OMvUv9JjIL7Q="
 
     assert_equal Base64.encode64(download_file_digest).strip,
       "lY+8u+BhXlQmUyQiOiXcUfCUikc="
@@ -109,6 +109,22 @@ class TestApplicationRequest < MiniTest::Test
 
     assert_equal Base64.encode64(xmldsig_schema_digest).strip,
       "bmG0+2KykgkLeWsXsl6CFbyo4Yc="
+  end
+
+  def test_ar_should_take_optional_end_date_start_date
+    request = Sepa::ApplicationRequest.new(@params.merge(
+      start_date: Date.new(2010, 01, 01),
+      end_date:   Date.new(2011, 01, 01),
+      command:    :download_file_list
+    ))
+
+    ns = {
+      'n' => "http://bxd.fi/xmldata/"
+    }
+    doc = Nokogiri::XML.parse(Base64.decode64(request.get_as_base64))
+
+    assert_equal("2010-01-01", doc.at_xpath('//n:StartDate', ns).content)
+    assert_equal("2011-01-01", doc.at_xpath('//n:EndDate', ns).content)
   end
 
   def test_ar_should_initialize_with_proper_params
@@ -185,6 +201,23 @@ class TestApplicationRequest < MiniTest::Test
       "Timestamp was not set correctly"
 
     assert timestamp_up <= Time.now && timestamp_up > (Time.now - 60),
+      "Timestamp was not set correctly"
+  end
+
+  def test_should_have_timestamp_set_if_custom_timestamp_given
+    custom_timestamp = Time.new(2010, 1, 1)
+    @params[:timestamp] = custom_timestamp
+
+    @ar_file = Sepa::SoapBuilder.new(@params).get_ar_as_base64
+
+    @params[:command] = :get_user_info
+    ar_file = Sepa::SoapBuilder.new(@params).get_ar_as_base64
+    doc_file = Nokogiri::XML(Base64.decode64(ar_file))
+
+    timestamp_file = Time.strptime(doc_file.at_css("Timestamp").content,
+                                   '%Y-%m-%dT%H:%M:%S%z')
+
+    assert timestamp_file <= custom_timestamp && timestamp_file > (custom_timestamp - 60),
       "Timestamp was not set correctly"
   end
 

@@ -47,6 +47,14 @@ class NordeaCertRequestSoapBuilderTest < MiniTest::Test
     end
   end
 
+  def test_should_have_custom_timestamp_if_given
+    @params[:timestamp] = Time.new(2010, 1, 1)
+    xml = Nokogiri::XML(Sepa::SoapBuilder.new(@params).to_xml)
+
+    timestamp = xml.at_xpath('//cer:Timestamp', 'cer' => "http://bxd.fi/CertificateService").text
+    assert_equal(Time.new(2010, 1, 1).iso8601, timestamp)
+  end
+
   def test_should_load_correct_template_with_get_certificate
     @params[:command] = :get_certificate
     xml = Nokogiri::XML(Sepa::SoapBuilder.new(@params).to_xml)

@@ -18,6 +18,7 @@ module Sepa
       find_correct_bank_extension(@bank)
 
       @template_path = File.expand_path('../xml_templates/soap/', __FILE__)
+      @timestamp = params[:timestamp]
     end
 
     def to_xml
@@ -131,9 +132,9 @@ module Sepa
       end
 
       def process_header(header, body, private_key, cert)
-        set_node(header, 'wsu|Created', Time.now.iso8601)
+        set_node(header, 'wsu|Created', (@timestamp || Time.now).iso8601)
 
-        set_node(header, 'wsu|Expires', (Time.now + 3600).iso8601)
+        set_node(header, 'wsu|Expires', ((@timestamp || Time.now) + 3600).iso8601)
 
         timestamp_digest = calculate_digest(header,'wsu|Timestamp')
         set_node(header,'dsig|Reference[URI="#dsfg8sdg87dsf678g6dsg6ds7fg"]' \

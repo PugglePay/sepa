@@ -105,10 +105,10 @@ module Sepa
       #   body
       # end
 
-      def set_request_body_contents(body, sender_id, request_id, lang, receiver_id)
+      def set_request_body_contents(body, sender_id, request_id, lang, receiver_id, timestamp)
         set_node(body, 'bxd|SenderId', sender_id)
         set_node(body, 'bxd|RequestId', request_id)
-        set_node(body, 'bxd|Timestamp', Time.now.iso8601)
+        set_node(body, 'bxd|Timestamp', (timestamp || Time.now).iso8601)
         set_node(body, 'bxd|Language', lang)
         set_node(body, 'bxd|UserAgent',"Sepa Transfer Library version " + VERSION)
         set_node(body, 'bxd|ReceiverId', receiver_id)
@@ -129,6 +129,7 @@ module Sepa
         sender_id = params.fetch(:customer_id)
         request_id = params.fetch(:request_id)
         receiver_id = params.fetch(:target_id)
+        timestamp = params[:timestamp]
         lang = params.fetch(:language)
         cert = OpenSSL::X509::Certificate.new(params.fetch(:cert_plain))
         private_key = params.fetch(:private_key)
@@ -137,7 +138,7 @@ module Sepa
         body = load_body_template(command)
         header = load_header_template(@template_path)
 
-        set_request_body_contents(body, sender_id, request_id, lang, receiver_id)
+        set_request_body_contents(body, sender_id, request_id, lang, receiver_id, timestamp)
         encrypted_request = encrypt_application_request(ar, cert, public_key)
         add_encrypted_generic_request_to_soap(encrypted_request, body)
 
@@ -210,21 +211,22 @@ module Sepa
         sender_id = params.fetch(:customer_id)
         request_id = params.fetch(:request_id)
         environment = params.fetch(:environment)
+        timestamp = params[:timestamp]
         cert = params.fetch(:cert)
 
         public_key = extract_public_key(cert)
         body = load_body_template(command)
 
-        set_body_contents(body, sender_id, request_id, environment)
+        set_body_contents(body, sender_id, request_id, environment, timestamp)
         encrypted_request = encrypt_application_request(ar, cert, public_key)
         add_encrypted_request_to_soap(encrypted_request, body)
       end
 
-      def set_body_contents(body, sender_id, request_id, environment)
+      def set_body_contents(body, sender_id, request_id, environment, timestamp)
         set_node(body, 'pkif|SenderId', sender_id)
         set_node(body, 'pkif|CustomerId', sender_id)
         set_node(body, 'pkif|RequestId', request_id)
-        set_node(body, 'pkif|Timestamp', Time.now.iso8601)
+        set_node(body, 'pkif|Timestamp', (timestamp || Time.now).iso8601)
         set_node(body, 'pkif|InterfaceVersion', 1)
         set_node(body, 'pkif|Environment', environment)
       end
@@ -278,10 +280,11 @@ module Sepa
         sender_id = params.fetch(:customer_id)
         request_id = params.fetch(:request_id)
         environment = params.fetch(:environment)
+        timestamp = params[:timestamp]
 
         body = load_body_template(command)
 
-        set_body_contents(body, sender_id, request_id, environment)
+        set_body_contents(body, sender_id, request_id, environment, timestamp)
         add_unencrypted_request_to_soap(ar, body)
       end
 
@@ -302,12 +305,13 @@ module Sepa
         lang = params.fetch(:language)
         cert = params.fetch(:cert)
         private_key = params.fetch(:private_key)
+        timestamp = params[:timestamp]
 
         public_key = extract_public_key(cert)
         body = load_body_template(command)
         header = load_header_template(@template_path)
 
-        set_request_body_contents(body, sender_id, request_id, lang, receiver_id)
+        set_request_body_contents(body, sender_id, request_id, lang, receiver_id, timestamp)
 
         add_unencrypted_generic_request_to_soap(ar, body)
 

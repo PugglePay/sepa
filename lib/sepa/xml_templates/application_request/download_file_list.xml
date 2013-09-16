@@ -2,6 +2,8 @@
     <CustomerId></CustomerId>
     <Command></Command>
     <Timestamp></Timestamp>
+    <StartDate></StartDate>
+    <EndDate></EndDate>
     <Status></Status>
     <Environment></Environment>
     <TargetId></TargetId>

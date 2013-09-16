@@ -1,6 +1,6 @@
 module Sepa
   module NordeaSoapRequest
-  # Holding methods needed only for Danske Services SOAP
+    # Holding methods needed only for Nordea Services SOAP
     private
 
       def find_correct_build(params)
@@ -22,14 +22,14 @@ module Sepa
         sender_id = params.fetch(:customer_id)
 
         body = load_body_template(command)
-        set_body_contents(body, ar, sender_id)
+        set_body_contents(body, ar, sender_id, params[:timestamp])
       end
 
-      def set_body_contents(body, ar, sender_id)
+      def set_body_contents(body, ar, sender_id, timestamp)
         set_node(body, 'cer|ApplicationRequest', ar)
         set_node(body, 'cer|SenderId', sender_id)
         set_node(body, 'cer|RequestId', SecureRandom.hex(17))
-        set_node(body, 'cer|Timestamp', Time.now.iso8601)
+        set_node(body, 'cer|Timestamp', (timestamp || Time.now).iso8601)
 
         body
       end

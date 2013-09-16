@@ -48,6 +48,14 @@ class DanskeCertSoapBuilderTest < MiniTest::Test
     end
   end
 
+  def test_should_assing_custom_timestamps_if_given
+    @danskecertparams[:timestamp] = Time.new(2010, 01, 02)
+
+    xml = Nokogiri::XML(Sepa::SoapBuilder.new(@danskecertparams).to_xml_unencrypted)
+    timestamp = xml.at_xpath('//pkif:Timestamp', 'pkif' => "http://danskebank.dk/PKI/PKIFactoryService")
+    assert_equal(Time.new(2010, 01, 02).iso8601, timestamp.text)
+  end
+
   def test_should_get_error_if_customer_id_missing
     @danskecertparams.delete(:customer_id)
 

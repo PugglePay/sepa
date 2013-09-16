@@ -10,6 +10,9 @@ module Sepa
       @file_type = params[:file_type]
       @content = params[:content]
       @file_reference = params[:file_reference]
+      @start_date = params[:start_date]
+      @end_date = params[:end_date]
+      @timestamp = params[:timestamp]
 
       @private_key, @cert, @pin, @service, @csr, @hmac,
         @bank_root_cert_serial,@request_id = ''
@@ -127,7 +130,7 @@ module Sepa
       def set_nodes_contents
         if @command != :get_bank_certificate && @command != :create_certificate
           set_node("CustomerId", @customer_id)
-          set_node("Timestamp", Time.now.iso8601)
+          set_node("Timestamp",  (@timestamp || Time.now).iso8601)
           set_node("Environment", @environment)
           set_node("SoftwareId", "Sepa Transfer Library version #{VERSION}")
           set_node("Command",
@@ -152,6 +155,8 @@ module Sepa
           set_node("Status", @status)
           set_node("TargetId", @target_id)
           set_node("FileType", @file_type)
+          set_node("StartDate", @start_date && @start_date.strftime("%Y-%m-%d"))
+          set_node("EndDate", @end_date && @end_date.strftime("%Y-%m-%d"))
         when :download_file
           set_node("Status", @status)
           set_node("TargetId", @target_id)
